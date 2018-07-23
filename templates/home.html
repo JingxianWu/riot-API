@@ -21,15 +21,19 @@
                 </form>
                 <button type="button">Search</button>
             </div>
+
+            <div class="row">
+                <h2 id="name">name</h2>
+            </div>
             
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-xs-4">
                     <h3>Solo/Duo</h3>
                     <h2 id="solo_tier">tier</h2>
                     <h2 id="solo_rank">rank</h2>
                     <h2 id="solo_lp">lp</h2>
                 </div>
-                <div class="col-md-4">
+                <div class="col-xs-4">
                         <h3>Flex 5v5</h3>
                         <h2 id="flex_tier">tier</h2>
                         <h2 id="flex_rank">rank</h2>
@@ -42,6 +46,9 @@
     </body>
 
     <script>
+        $( document ).ready(function() {
+            $("#name").hide(); 
+        });
         
         $("button").click(function(){
 
@@ -64,7 +71,8 @@
             name = data['name']; 
             accountId = data['accountId'];
             summonerId = data['id']; 
-            $('#show_name').text(name); 
+            $('#name').text(name); 
+            $('#name').show(); 
             solo_data = ranked_lookup(summonerId); 
             console.log(solo_data); 
         }
