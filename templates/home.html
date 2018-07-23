@@ -1,0 +1,118 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>Summoner Lookup</title>
+        <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Summoner Lookup</h1>
+        
+            <div class="row">
+                <form id='search_box'>
+                    <h3>Enter summoner name: </h3><input type="text" name="summoner" id="summoner">
+                </form>
+                <button type="button">Search</button>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Solo/Duo</h3>
+                    <h2 id="solo_tier">tier</h2>
+                    <h2 id="solo_rank">rank</h2>
+                    <h2 id="solo_lp">lp</h2>
+                </div>
+                <div class="col-md-4">
+                        <h3>Flex 5v5</h3>
+                        <h2 id="flex_tier">tier</h2>
+                        <h2 id="flex_rank">rank</h2>
+                        <h2 id="flex_lp">lp</h2>
+                    </div>
+            </div>
+        
+        </div>
+
+    </body>
+
+    <script>
+        
+        $("button").click(function(){
+
+            $.ajax({
+                url: 'summoner_name_lookup/',
+                data: {
+                'summoner': document.getElementById("summoner").value
+                },
+                dataType: 'json',
+                success: function (data) {
+                load_info(data); 
+                }
+            });
+
+            document.getElementById("search_box").reset();
+        });
+
+        var load_info = function(data){
+            console.log(data); 
+            name = data['name']; 
+            accountId = data['accountId'];
+            summonerId = data['id']; 
+            $('#show_name').text(name); 
+            solo_data = ranked_lookup(summonerId); 
+            console.log(solo_data); 
+        }
+
+        var ranked_lookup = function(summonerId) {
+            $.ajax({
+                url: 'ranked_lookup/',
+                data: {
+                'summonerId': summonerId
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var data_soloQ;
+                    var data_flexQ; 
+                    for (i = 0; i < data.length; i++) {
+                        if (data[i]["queueType"] == "RANKED_SOLO_5x5") {data_soloQ = data[i]; }
+                        else if (data[i]["queueType"] == "RANKED_FLEX_SR") {data_flexQ = data[i]; }
+                    }
+                    if (data_soloQ != undefined){
+                        solo_tier = data_soloQ['tier'];
+                        $('#solo_tier').text(solo_tier);
+                        solo_rank = data_soloQ['rank']; 
+                        $('#solo_rank').text(solo_rank); 
+                        solo_lp = data_soloQ['leaguePoints'];
+                        $('#solo_lp').text(solo_lp);
+                    }
+                    else {
+                        $('#solo_tier').text("N/A");
+                        $('#solo_rank').text("N/A");
+                        $('#solo_lp').text("N/A");
+
+                    }
+
+                    if (data_flexQ != undefined){
+                        $('#flex_tier').text(data_flexQ['tier']);
+                        $('#flex_rank').text(data_flexQ['rank']);
+                        $('#flex_lp').text(data_flexQ['leaguePoints']);
+                    }
+                    else {
+                        $('#flex_tier').text("N/A");
+                        $('#flex_rank').text("N/A");
+                        $('#flex_lp').text("N/A");
+                    }
+                    
+                }
+            });
+
+        }
+    </script>
+
+</html>
