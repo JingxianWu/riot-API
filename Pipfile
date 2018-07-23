@@ -7,6 +7,7 @@ name = "pypi"
 django = "==2.0.6"
 certifi = "*"
 requests = "*"
+gunicorn = "==19.9.0"
 
 [dev-packages]
 
